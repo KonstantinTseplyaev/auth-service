@@ -1,0 +1,35 @@
+server:
+  port: 8091
+  servlet:
+    context-path: /auth
+
+logging:
+  level:
+    org.springframework.orm.jpa: INFO
+    org.springframework.transaction: INFO
+    org.springframework.transaction.interceptor: TRACE
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+
+jwt:
+  secret: jfp3943jfkd7233jcgir943jpw93hd1ck84cocpewofk23ofpslkjehpoir34jokgfslnl
+  lifetime: 10m
+
+spring:
+  liquibase:
+    enabled: true
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/hw4-users-db
+    username: Konstantin
+    password: finalproject
+    driverClassName: org.postgresql.Driver
+
+
