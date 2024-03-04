@@ -2,7 +2,10 @@ server:
   port: 8091
   servlet:
     context-path: /auth
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
 logging:
   level:
     org.springframework.orm.jpa: INFO
@@ -15,6 +18,8 @@ jwt:
   lifetime: 10m
 
 spring:
+  application:
+    name: auth-service
   liquibase:
     enabled: true
   output:
