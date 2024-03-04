@@ -19,8 +19,8 @@ public class RegistrationController {
 
     //public endpoint
     @PostMapping()
-    public ResponseEntity<?> registration(@RequestBody UserRegistrationDto user) {
+    public ResponseEntity<String> registration(@RequestBody UserRegistrationDto user) {
         log.debug("registration user with data: {}", user);
-        return registrationService.registerUser(user);
+        return ResponseEntity.ok(registrationService.registerUser(user));
     }
 }

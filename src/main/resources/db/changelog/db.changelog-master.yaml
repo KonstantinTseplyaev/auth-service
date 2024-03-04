@@ -1,7 +1,5 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/create-users-and-roles-tables.yaml
+      file: db/changelog/changeset/create-users-table.yaml
   - include:
       file: db/changelog/changeset/create-email-index-for-users.yaml
-  - include:
-      file: db/changelog/changeset/add-admin-and-user-roles.yaml

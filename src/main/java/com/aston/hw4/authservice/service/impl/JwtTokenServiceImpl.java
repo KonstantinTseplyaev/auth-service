@@ -2,7 +2,7 @@ package com.aston.hw4.authservice.service.impl;
 
 import com.aston.hw4.authservice.dao.AppUserRepository;
 import com.aston.hw4.authservice.model.AppUser;
-import com.aston.hw4.authservice.model.Role;
+import com.aston.hw4.authservice.model.UserRole;
 import com.aston.hw4.authservice.service.JwtTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -18,9 +18,7 @@ import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 @Component
@@ -35,15 +33,14 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     @Override
     public String generateToken(AppUser user) {
         Map<String, Object> claims = new HashMap<>();
-        List<String> roles = user.getRoles().stream().map(Role::getName).toList();
         claims.put("id", user.getId());
-        claims.put("roles", roles);
+        claims.put("role", user.getRole());
+        claims.put("email", user.getEmail());
 
         Date issureDate = new Date();
         Date expiredDate = new Date(issureDate.getTime() + lifetime.toMillis());
 
         return Jwts.builder()
-                .setSubject(user.getEmail())
                 .setClaims(claims)
                 .setIssuedAt(issureDate)
                 .setExpiration(expiredDate)
@@ -62,20 +59,16 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             long id = extractUserId(jwtToken);
             AppUser user = userRepository.findById(id).orElseThrow();
             String userEmail = user.getEmail();
-            Set<Role> userRoles = user.getRoles();
+            UserRole userRole = user.getRole();
 
-            if (userEmail.equals(extractEmail(jwtToken))) {
-                List<String> jwtRoles = extractRoles(jwtToken);
-                for (Role role : userRoles) {
-                    if (!jwtRoles.contains(role.getName())) {
-                        return false;
-                    }
-                }
+            if (userEmail.equals(extractEmail(jwtToken)) && userRole == (extractRole(jwtToken))) {
+                return true;
             }
+
         } catch (JwtException exp) {
             return false;
         }
-        return true;
+        return false;
     }
 
     private int extractUserId(String jwtToken) {
@@ -83,22 +76,22 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return (int) claims.get("id");
     }
 
-    private List<String> extractRoles(String jwtToken) {
+    private UserRole extractRole(String jwtToken) {
         Claims claims = extractAllClaims(jwtToken);
-        List<String> roles = claims.get("roles", List.class);
-        return roles;
+        return UserRole.valueOf((String) claims.get("role"));
+    }
+
+    private String extractEmail(String token) {
+        Claims claims = extractAllClaims(token);
+        return (String) claims.get("email");
     }
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 

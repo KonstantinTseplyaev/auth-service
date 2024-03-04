@@ -19,8 +19,8 @@ public class AuthController {
 
     //public endpoint
     @PostMapping
-    public ResponseEntity<?> login(@RequestBody UserAuthDto user) {
+    public ResponseEntity<String> login(@RequestBody UserAuthDto user) {
         log.debug("login user with data: {}", user);
-        return authService.login(user);
+        return ResponseEntity.ok(authService.login(user));
     }
 }
